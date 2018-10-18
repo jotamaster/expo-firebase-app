@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import View from 'react-native';
+import {View} from 'react-native';
 import BackgraundImage from "./../components/BackgroundImage";
 import AppButton from "../components/AppButton";
 import t from "tcomb-form-native";
-import FormValidation from "../utils/valitation";
+import FormValidation from "../utils/validation";
 import {Card} from "react-native-elements";
 const  Form = t.form.Form;
 import * as firebase from 'firebase';
@@ -36,7 +36,23 @@ export default class Login extends Component{
     }
 
     login(){
-
+        const validate = this.refs.form.getValue();
+        if(validate){
+            firebase.auth().signInWithEmailAndPassword(validate.email,validate.password)
+            .then(() =>{
+                Toast.showWithGravity('Bienvenido', Toast.LONG, Toast.BOTTOM  );
+            })
+            .catch((error) =>{
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                if(errorCode === 'auth/wrong-password'){
+                    Toast.showWithGravity('Clave incorrenta', Toast.LONG, Toast.BOTTOM  )
+                }
+                else{
+                    Toast.showWithGravity(errorMessage, Toast.LONG, Toast.BOTTOM  )
+                }
+            });
+        }
     }
     render(){
         return(
@@ -49,8 +65,9 @@ export default class Login extends Component{
                             options={this.options}
                         />
                         <AppButton
+                            whithl={200}
                             bgColor="rgba(111, 38,74, 0.7)"
-                            title="Entrar"
+                            title="Login"
                             action={this.login.bind(this)}
                             iconName="sign-in"
                             iconSize={30}

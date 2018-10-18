@@ -5,7 +5,7 @@ import {Dimensions} from 'react-native';
 
 export default class AppButton extends Component{
     render(){
-        const {action, iconName, iconColor, title, bgColor} = this.props;
+        const {action, iconName, iconColor, title, bgColor, widthl} = this.props;
         const {width} = Dimensions.get("window");
         return(
             <Button
@@ -17,7 +17,7 @@ export default class AppButton extends Component{
                     borderWidth: 0,
                     borderRadius: 5,
                     marginBottom: 5,
-                    width: width,
+                    width: widthl,
                     
                 }}
                 title={title}

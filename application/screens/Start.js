@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {View,Button} from 'react-native';
+import {View} from 'react-native';
 import BackgroundImage from '../components/BackgroundImage';
 import AppButton from '../components/AppButton';
 import {NavigationActions} from 'react-navigation';
 import Toast from 'react-native-simple-toast';
 import * as firebase from 'firebase';
+import facebook from '../utils/facebook';
+import Expo from 'expo'
 
 export default class Start extends Component{
     static navigationOptions = {
@@ -13,32 +15,43 @@ export default class Start extends Component{
 
     login(){
         const navigateAction = NavigationActions.navigate({
-            routerName:'Login'
+            routeName:'Login'
         });
 
         this.props.navigation.dispatch(navigateAction);
-
-        console.log('hola login');
-
     }
     register(){
-        console.log('hola');
+        const navigateAction = NavigationActions.navigate({
+            routeName:'Register'
+        });
+
+        this.props.navigation.dispatch(navigateAction);
     }
 
     async facebook(){
+        const {type,token} = await Expo.Facebook.logInWithReadPermissionsAsync(
+            facebook.config.application_id,
+            {permissions: facebook.config.permissions}
+        )
 
+        if (type === 'success') {
+            const credentials = firebase.auth.FacebookAuthProvider.credential(token);
+            firebase.auth().signInWithCredential(credentials)
+            .catch(error => {
+                Toast.showWithGravity(error.message, Toast.LONG, Toast.BOTTOM);    
+            });
+        }else if (type === 'cancel'){
+            Toast.showWithGravity('Incio de sesión cancelado', Toast.LONG, Toast.BOTTOM);    
+        }else{
+            Toast.showWithGravity('Error desconocido', Toast.LONG, Toast.BOTTOM);    
+        }
     }
 
     render(){
         return(
-            <BackgroundImage >
+            <BackgroundImage source={require('./../../assets/images/bgstart.jpg')} >
                 <View style={{justifyContent:'center', flex:1}}>
-                <Button
-                    onPress={this.register.bind(this)}
-                        title="Learn More"
-                        color="#841584"
-                        accessibilityLabel="Learn more about this purple button"
-                        />
+          
                     <AppButton
                        bgColor="rgba(111, 38,74, 0.7)"
                         title="Entrar"
